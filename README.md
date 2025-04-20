@@ -45,3 +45,31 @@ You can then run the image using:
 ```sh
 docker run --rm everest-with-spring-collab
 ```
+
+## Running Everest in GitHub Actions
+
+Here is an example setup that runs Everest in GitHub Actions with [Spring Collab](https://maddie480.ovh/celeste/gb?id=SpringCollab2020) installed:
+```yaml
+name: Run Everest
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    container:
+      image: max480/everest:dev
+    steps:
+      - name: Run the thing
+        run: |
+          cd /home/ubuntu/celeste/Mods
+          curl -o mods.zip https://maddie480.ovh/celeste/bundle-download?id=SpringCollab2020
+          unzip mods.zip
+          rm mods.zip
+          cd ..
+          ./Celeste
+```
+
+Note that **this action fails**, because the game doesn't do anything once it's started up, until the job times out (hence the 5-minute limit set in the example). You need to install a code mod to the setup that makes the game run some tests, then exit with the appropriate exit code to end the action.
