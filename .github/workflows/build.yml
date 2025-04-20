@@ -1,0 +1,52 @@
+name: Build Docker images
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        branch:
+          - name: stable
+          - name: beta
+          - name: dev
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Decrypt Celeste
+      env:
+        CELESTE_GPG_PASSPHRASE: ${{ secrets.CELESTE_GPG_PASSPHRASE }}
+      run: |
+        gpg --quiet --batch --yes --decrypt --passphrase="$CELESTE_GPG_PASSPHRASE" --output Celeste.tar.gz Celeste.tar.gz.gpg
+        rm Celeste.tar.gz.gpg
+
+    - name: Set up QEMU
+      if: github.ref == 'refs/heads/main'
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      if: github.ref == 'refs/heads/main'
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Docker Hub
+      if: github.ref == 'refs/heads/main'
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push
+      if: github.ref == 'refs/heads/main'
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        build-args: |
+          MAIN_BUILD_URL=https://maddie480.ovh/celeste/download-everest?branch=${{ matrix.branch.name }}&platform=linux
+        push: true
+        tags: max480/everest:${{ matrix.branch.name }}
