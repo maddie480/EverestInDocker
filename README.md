@@ -62,7 +62,7 @@ jobs:
     container:
       image: max480/everest:dev
     steps:
-      - name: Run the thing
+      - name: Run Everest
         run: |
           cd /home/ubuntu/celeste/Mods
           curl -o mods.zip https://maddie480.ovh/celeste/bundle-download?id=SpringCollab2020
