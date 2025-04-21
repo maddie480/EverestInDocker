@@ -5,7 +5,7 @@ ADD Celeste.tar.gz /home/ubuntu/
 ARG MAIN_BUILD_URL
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y curl unzip libicu-dev \
+    && apt-get install -y curl unzip libicu74 \
     && apt-get clean \
     && cd /home/ubuntu \
     && curl -Lo everest.zip "${MAIN_BUILD_URL}" \
