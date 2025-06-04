@@ -13,6 +13,7 @@ jobs:
           - name: stable
           - name: beta
           - name: dev
+          - name: vanilla
 
     runs-on: ubuntu-latest
 
@@ -26,10 +27,6 @@ jobs:
         gpg --quiet --batch --yes --decrypt --passphrase="$CELESTE_GPG_PASSPHRASE" --output Celeste.tar.gz Celeste.tar.gz.gpg
         rm Celeste.tar.gz.gpg
 
-    - name: Set up QEMU
-      if: github.ref == 'refs/heads/main'
-      uses: docker/setup-qemu-action@v3
-
     - name: Set up Docker Buildx
       if: github.ref == 'refs/heads/main'
       uses: docker/setup-buildx-action@v3
@@ -41,12 +38,20 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build and push
-      if: github.ref == 'refs/heads/main'
+    - name: Build and push (Everest)
+      if: github.ref == 'refs/heads/main' && matrix.branch.name != 'vanilla'
       uses: docker/build-push-action@v6
       with:
         context: .
         build-args: |
           MAIN_BUILD_URL=https://maddie480.ovh/celeste/download-everest?branch=${{ matrix.branch.name }}&platform=linux
+        push: true
+        tags: max480/everest:${{ matrix.branch.name }}
+
+    - name: Build and push (vanilla)
+      if: github.ref == 'refs/heads/main' && matrix.branch.name == 'vanilla'
+      uses: docker/build-push-action@v6
+      with:
+        context: .
         push: true
         tags: max480/everest:${{ matrix.branch.name }}

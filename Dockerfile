@@ -7,6 +7,7 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y curl unzip libicu74 \
     && apt-get clean \
+    && if [ "${MAIN_BUILD_URL}" = "" ]; then exit 0; fi \
     && cd /home/ubuntu \
     && curl -Lo everest.zip "${MAIN_BUILD_URL}" \
     && unzip everest.zip \
