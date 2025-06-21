@@ -20,7 +20,23 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Get Everest hash
+      id: get-everest-hash
+      if: matrix.branch.name != 'vanilla'
+      run: |
+        touch /tmp/dummy.txt
+        echo "hash=`curl -L --fail 'https://maddie480.ovh/celeste/download-everest?branch=${{ matrix.branch.name }}&platform=linux' | sha1sum -b | cut -d ' ' -f 1`" >> $GITHUB_OUTPUT
+
+    - name: Check if hash has been processed
+      id: cache-everest
+      if: matrix.branch.name != 'vanilla'
+      uses: actions/cache@v4
+      with:
+        path: /tmp/dummy.txt
+        key: everest-build-hash-${{ matrix.branch.name }}-${{ steps.get-everest-hash.outputs.hash }}
+
     - name: Decrypt Celeste
+      if: matrix.branch.name == 'vanilla' || steps.cache-everest.outputs.cache-hit != 'true'
       env:
         CELESTE_GPG_PASSPHRASE: ${{ secrets.CELESTE_GPG_PASSPHRASE }}
       run: |
@@ -28,18 +44,18 @@ jobs:
         rm Celeste.tar.gz.gpg
 
     - name: Set up Docker Buildx
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main' && (matrix.branch.name == 'vanilla' || steps.cache-everest.outputs.cache-hit != 'true')
       uses: docker/setup-buildx-action@v3
 
     - name: Login to Docker Hub
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main' && (matrix.branch.name == 'vanilla' || steps.cache-everest.outputs.cache-hit != 'true')
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build and push (Everest)
-      if: github.ref == 'refs/heads/main' && matrix.branch.name != 'vanilla'
+      if: github.ref == 'refs/heads/main' && matrix.branch.name != 'vanilla' && steps.cache-everest.outputs.cache-hit != 'true'
       uses: docker/build-push-action@v6
       with:
         context: .
