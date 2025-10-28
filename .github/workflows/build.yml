@@ -71,3 +71,11 @@ jobs:
         context: .
         push: true
         tags: max480/everest:${{ matrix.branch.name }}
+
+    - name: Build and push (TAS Check)
+      if: github.ref == 'refs/heads/main' && matrix.branch.name == 'stable' && steps.cache-everest.outputs.cache-hit != 'true'
+      uses: docker/build-push-action@v6
+      with:
+        context: tas-check
+        push: true
+        tags: max480/everest:tas-check

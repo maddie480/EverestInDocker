@@ -73,3 +73,14 @@ jobs:
 ```
 
 Note that **this action fails**, because the game doesn't do anything once it's started up, until the job times out (hence the 5-minute limit set in the example). You need to install a code mod to the setup that makes the game run some tests, then exit with the appropriate exit code to end the action.
+
+## Running a TAS check
+
+Everest has set up a "TAS check" on pull requests, in order to make sure a change doesn't have unintended side-effects that would change gameplay. The TAS (Tool-Assisted Speedrun) plays through the entirety of [Strawberry Jam Collab](https://gamebanana.com/mods/424541) using a pre-defined set of inputs, and checks that it did indeed complete the collab. If it doesn't, it indicates something has changed, and this should be looked into.
+
+An extra image was created to run the check with a new version of a mod. To run it, use:
+```sh
+docker run --rm max480/everest:tas-check [mod_id] [download_url]
+```
+
+For instance, `docker run --rm max480/everest:tas-check ExtendedVariantMode 'https://cdn.discordapp.com/attachments/[...]'` will run the check on an Extended Variant Mode build posted on Discord.
