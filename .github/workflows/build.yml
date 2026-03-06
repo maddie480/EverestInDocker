@@ -56,7 +56,7 @@ jobs:
 
     - name: Build and push (Everest)
       if: github.ref == 'refs/heads/main' && matrix.branch.name != 'vanilla' && steps.cache-everest.outputs.cache-hit != 'true'
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       with:
         context: .
         build-args: |
@@ -66,7 +66,7 @@ jobs:
 
     - name: Build and push (vanilla)
       if: github.ref == 'refs/heads/main' && matrix.branch.name == 'vanilla'
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       with:
         context: .
         push: true
@@ -74,7 +74,7 @@ jobs:
 
     - name: Build and push (TAS Check)
       if: github.ref == 'refs/heads/main' && matrix.branch.name == 'stable' && steps.cache-everest.outputs.cache-hit != 'true'
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       with:
         context: tas-check
         push: true
