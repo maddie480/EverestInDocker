@@ -45,7 +45,7 @@ jobs:
 
     - name: Set up Docker Buildx
       if: github.ref == 'refs/heads/main' && (matrix.branch.name == 'vanilla' || steps.cache-everest.outputs.cache-hit != 'true')
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v4
 
     - name: Login to Docker Hub
       if: github.ref == 'refs/heads/main' && (matrix.branch.name == 'vanilla' || steps.cache-everest.outputs.cache-hit != 'true')
