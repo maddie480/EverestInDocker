@@ -5,7 +5,7 @@ ADD Celeste.tar.gz /home/ubuntu/
 ARG MAIN_BUILD_URL
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y curl unzip libicu74 \
+    && apt-get install -y curl unzip libicu78 \
     && apt-get clean \
     && if [ "${MAIN_BUILD_URL}" = "" ]; then exit 0; fi \
     && cd /home/ubuntu \
