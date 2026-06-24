@@ -30,7 +30,7 @@ jobs:
     - name: Check if hash has been processed
       id: cache-everest
       if: matrix.branch.name != 'vanilla'
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: /tmp/dummy.txt
         key: everest-build-hash-${{ matrix.branch.name }}-${{ steps.get-everest-hash.outputs.hash }}
